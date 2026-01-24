@@ -13,7 +13,7 @@ Route::get('/menu/{slug}', PublicMenu::class)->name('menu.show');
 
 // Redirección opcional: si entran a la raíz, mándalos a un local por defecto o a una landing
 Route::get('/', function () {
-    return redirect()->route('menu.show', ['slug' => 'bar-centro']);
+    return redirect()->route('admin.index');
     // OJO: Asegúrate de crear un local con slug 'bar-centro' en la BD
 });
 
