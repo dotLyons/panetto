@@ -154,7 +154,7 @@ class AdminDashboard extends Component
             'name' => 'required',
             'category_id' => 'required|exists:categories,id', // Validación simple
             'price' => 'required|numeric',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:51200',
         ]);
 
         // Seguridad extra: Verificar que la categoría elegida sea de este local
