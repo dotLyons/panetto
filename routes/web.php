@@ -2,6 +2,7 @@
 
 use App\Livewire\AdminDashboard;
 use App\Livewire\PublicMenu;
+use App\Livewire\RaffleForm;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
@@ -10,6 +11,8 @@ Route::get('/admin-panel', AdminDashboard::class)->name('admin.index');
 
 // Ruta Pública Dinámica (Ej: /menu/bar-centro)
 Route::get('/menu/{slug}', PublicMenu::class)->name('menu.show');
+
+Route::get('/sorteo', RaffleForm::class)->name('raffle.form');
 
 // Redirección opcional: si entran a la raíz, mándalos a un local por defecto o a una landing
 Route::get('/', function () {
