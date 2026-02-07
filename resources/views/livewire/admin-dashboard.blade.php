@@ -1,7 +1,8 @@
 <div class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10">
 
     @if (!$isAuthenticated)
-        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center border-t-4 border-panetto-orange mt-10">
+        <div
+            class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center border-t-4 border-panetto-orange mt-10">
             <div class="mb-6">
                 <h2 class="text-3xl font-bold text-panetto-orange uppercase tracking-wider">Panetto</h2>
                 <p class="text-sm text-gray-500 font-semibold">Acceso Administrativo</p>
@@ -49,17 +50,18 @@
                         <p class="text-sm text-gray-500 mt-2 font-medium">Gestionar productos y categorías</p>
                         <div class="mt-6 text-panetto-orange font-bold text-sm flex items-center">
                             Ingresar <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 ml-1 group-hover:translate-x-1 transition" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                class="h-4 w-4 ml-1 group-hover:translate-x-1 transition" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5l7 7-7 7" />
                             </svg>
                         </div>
                     </button>
                 @empty
                     <div
                         class="col-span-full bg-yellow-50 p-8 rounded-xl text-center text-yellow-800 border-2 border-yellow-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-yellow-500" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-yellow-500"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
@@ -110,7 +112,8 @@
                     </div>
                 @endif
 
-                <div class="flex gap-2 mb-6 border-b border-gray-200 pb-1 overflow-x-auto no-scrollbar whitespace-nowrap">
+                <div
+                    class="flex gap-2 mb-6 border-b border-gray-200 pb-1 overflow-x-auto no-scrollbar whitespace-nowrap">
                     <button wire:click="changeView('list')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'list' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         📋 Listado
@@ -140,8 +143,8 @@
 
                                 @error('cat_name')
                                     <span class="text-red-500 text-xs block mb-3 font-bold flex items-center"><svg
-                                            xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
+                                            xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg> {{ $message }}</span>
@@ -149,8 +152,8 @@
 
                                 <button type="submit"
                                     class="w-full bg-panetto-orange text-white py-3 rounded-lg font-bold hover:bg-orange-600 transition shadow-md active:scale-95 flex items-center justify-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M5 13l4 4L19 7" />
                                     </svg>
@@ -184,18 +187,20 @@
                                                     onclick="confirm('¿Seguro que desea eliminar la categoría \'{{ $cat->name }}\'?') || event.stopImmediatePropagation()"
                                                     class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-full transition shadow-sm border border-transparent hover:border-red-200"
                                                     title="Eliminar">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
                                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
                                                 </button>
                                             </div>
                                         </li>
                                     @empty
-                                        <li class="p-8 text-center text-gray-400 text-sm italic flex flex-col items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 opacity-50" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
+                                        <li
+                                            class="p-8 text-center text-gray-400 text-sm italic flex flex-col items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-2 opacity-50"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                             </svg>
@@ -218,8 +223,8 @@
                             @if ($productId)
                                 <button wire:click="resetForm"
                                     class="text-sm text-gray-500 hover:text-red-500 font-bold flex items-center gap-1 px-3 py-1.5 rounded hover:bg-red-50 transition">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -282,12 +287,14 @@
                                         <div class="flex-shrink-0 text-center p-2 bg-white border rounded shadow-sm">
                                             <img src="{{ Storage::url($currentImage) }}"
                                                 class="w-16 h-16 object-contain rounded mb-1">
-                                            <span class="text-[10px] font-bold text-green-600 uppercase block">Actual</span>
+                                            <span
+                                                class="text-[10px] font-bold text-green-600 uppercase block">Actual</span>
                                         </div>
                                     @endif
 
                                     <div class="flex-1">
-                                        <input type="file" wire:model="image" accept="image/png, image/jpeg, image/jpg"
+                                        <input type="file" wire:model="image"
+                                            accept="image/png, image/jpeg, image/jpg"
                                             class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-panetto-orange file:text-white hover:file:bg-orange-600 cursor-pointer">
                                         <p class="text-xs text-gray-400 mt-2 font-medium">PNG, JPG hasta 2MB.</p>
                                     </div>
@@ -295,10 +302,10 @@
                                     <div wire:loading wire:target="image"
                                         class="absolute inset-0 bg-white/80 flex items-center justify-center rounded-lg">
                                         <div class="flex items-center gap-2 text-panetto-orange font-bold">
-                                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 24 24">
-                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                    stroke-width="4"></circle>
+                                            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10"
+                                                    stroke="currentColor" stroke-width="4"></circle>
                                                 <path class="opacity-75" fill="currentColor"
                                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                                 </path>
@@ -315,8 +322,8 @@
                             <div class="col-span-2 mt-4 pt-4 border-t border-gray-100">
                                 <button type="submit"
                                     class="w-full bg-panetto-orange text-white py-4 rounded-xl font-bold text-lg hover:bg-orange-600 shadow-md transition transform active:scale-[0.98] flex items-center justify-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
@@ -331,14 +338,14 @@
                     <div class="flex flex-col h-full">
                         <div class="mb-6 relative max-w-md">
                             <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </span>
                             <input type="text" wire:model.live.debounce.300ms="search"
-                                placeholder="Buscar producto por nombre..."
+                                placeholder="Buscar producto o categoría..."
                                 class="w-full p-3 pl-10 border-2 border-gray-200 rounded-lg text-sm bg-white focus:ring-2 focus:ring-panetto-orange focus:border-panetto-orange outline-none shadow-sm transition">
                         </div>
 
@@ -387,9 +394,10 @@
                                                         class="text-blue-500 hover:text-white hover:bg-blue-500 p-2 rounded-lg transition border border-blue-200 hover:border-transparent shadow-sm group/btn"
                                                         title="Editar">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="h-5 w-5 group-hover/btn:scale-110 transition" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            class="h-5 w-5 group-hover/btn:scale-110 transition"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                                         </svg>
                                                     </button>
@@ -398,9 +406,10 @@
                                                         onclick="confirm('¿Estás seguro de eliminar este producto?') || event.stopImmediatePropagation()"
                                                         title="Eliminar">
                                                         <svg xmlns="http://www.w3.org/2000/svg"
-                                                            class="h-5 w-5 group-hover/btn:scale-110 transition" fill="none"
-                                                            viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            class="h-5 w-5 group-hover/btn:scale-110 transition"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
                                                                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
                                                     </button>
@@ -412,14 +421,16 @@
                                             <td colspan="4" class="p-12 text-center text-gray-400">
                                                 <div class="flex flex-col items-center">
                                                     <svg xmlns="http://www.w3.org/2000/svg"
-                                                        class="h-12 w-12 mb-4 opacity-40 text-panetto-orange" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        class="h-12 w-12 mb-4 opacity-40 text-panetto-orange"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
                                                             d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                                     </svg>
                                                     @if ($search)
                                                         <p class="font-medium text-gray-600">No se encontraron
-                                                            productos para "<strong>{{ $search }}</strong>".</p>
+                                                            productos ni categorías para
+                                                            "<strong>{{ $search }}</strong>".</p>
                                                     @else
                                                         <p class="font-bold text-lg text-gray-700">Aún no hay productos
                                                             cargados.</p>

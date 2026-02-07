@@ -1,24 +1,37 @@
 <div class="min-h-screen pb-10 bg-panetto-light">
-    <header class="bg-panetto-orange text-white p-5 shadow-md text-center sticky top-0 z-20">
-        <h1 class="text-2xl md:text-3xl font-serif font-bold tracking-wider uppercase">{{ $locationName }}</h1>
-        <p class="text-xs md:text-sm text-white/90 mt-1 uppercase tracking-widest font-semibold">Menú Digital</p>
+
+    <header
+        class="bg-panetto-orange text-white py-2 px-4 shadow-md text-center sticky top-0 z-20 transition-all duration-300">
+
+        <div class="flex justify-center mb-1">
+            <div class="bg-white rounded-full p-0.5 shadow-lg">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo Panetto" class="w-12 h-12 object-contain rounded-full">
+            </div>
+        </div>
+
+        <h1 class="text-lg md:text-2xl font-serif font-bold tracking-wider uppercase drop-shadow-sm leading-tight">
+            {{ $locationName }}
+        </h1>
+        <p class="text-[10px] md:text-xs text-white/90 uppercase tracking-widest font-semibold">
+            Menú Digital
+        </p>
     </header>
 
     <div
-        class="sticky top-[80px] md:top-[98px] z-10 bg-panetto-light/95 backdrop-blur shadow-sm py-3 px-4 flex gap-2 overflow-x-auto no-scrollbar border-b border-panetto-orange/10">
+        class="sticky top-[105px] md:top-[120px] z-10 bg-panetto-light/95 backdrop-blur shadow-sm py-2 px-4 flex gap-2 overflow-x-auto no-scrollbar border-b border-panetto-orange/10">
         <button wire:click="selectCategory(null)"
-            class="px-4 py-1.5 rounded-full whitespace-nowrap text-xs font-bold transition border border-transparent shadow-sm {{ is_null($selectedCategory) ? 'bg-panetto-orange text-white' : 'bg-white text-gray-600 border-gray-200 hover:border-panetto-orange/30' }}">
+            class="px-3 py-1 rounded-full whitespace-nowrap text-xs font-bold transition border border-transparent shadow-sm {{ is_null($selectedCategory) ? 'bg-panetto-orange text-white' : 'bg-white text-gray-600 border-gray-200 hover:border-panetto-orange/30' }}">
             Todos
         </button>
         @foreach ($categories as $cat)
             <button wire:click="selectCategory({{ $cat->id }})"
-                class="px-4 py-1.5 rounded-full whitespace-nowrap text-xs font-bold transition border border-transparent shadow-sm {{ $selectedCategory == $cat->id ? 'bg-panetto-orange text-white' : 'bg-white text-gray-600 border-gray-200 hover:border-panetto-orange/30' }}">
+                class="px-3 py-1 rounded-full whitespace-nowrap text-xs font-bold transition border border-transparent shadow-sm {{ $selectedCategory == $cat->id ? 'bg-panetto-orange text-white' : 'bg-white text-gray-600 border-gray-200 hover:border-panetto-orange/30' }}">
                 {{ $cat->name }}
             </button>
         @endforeach
     </div>
 
-    <div class="container mx-auto px-4 mt-6">
+    <div class="container mx-auto px-4 mt-4">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
             @forelse($products as $product)
                 <div
@@ -27,7 +40,8 @@
                     <div
                         class="w-24 h-full md:w-full md:h-48 relative flex-shrink-0 bg-panetto-accent/20 flex items-center justify-center">
                         @if ($product->image_path)
-                            <img src="{{ Storage::url($product->image_path) }}" class="w-full h-full object-contain p-1">
+                            <img src="{{ Storage::url($product->image_path) }}"
+                                class="w-full h-full object-contain p-1">
                         @else
                             <span class="text-3xl opacity-40 text-panetto-orange">🍽️</span>
                         @endif

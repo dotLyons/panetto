@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Models\Location;
 use App\Models\Product;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage; // Importamos el modelo
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -30,24 +30,16 @@ class AdminDashboard extends Component
 
     // Inputs Formulario
     public $productId = null;
-
     public $name;
-
     public $description;
-
     public $price;
-
     public $category_id;
-
     public $image;
-
     public $currentImage;
-
     public $cat_name;
 
     public function mount()
     {
-        // Recuperar sesión y local si existen
         $this->isAuthenticated = Session::get('admin_logged_in', false);
         $this->selectedLocationId = Session::get('admin_location_id', null);
 
@@ -74,7 +66,7 @@ class AdminDashboard extends Component
             $this->selectedLocationId = $id;
             $this->selectedLocationName = $location->name;
             Session::put('admin_location_id', $id);
-            $this->view = 'list'; // Ir al dashboard
+            $this->view = 'list';
         }
     }
 
@@ -109,13 +101,12 @@ class AdminDashboard extends Component
         $this->resetErrorBag();
     }
 
-    // --- Categorías (Filtradas por Local) ---
+    // --- Categorías ---
 
     public function saveCategory()
     {
         $this->validate(['cat_name' => 'required|min:3']);
 
-        // Crear categoría vinculada al local actual
         Category::create([
             'name' => $this->cat_name,
             'location_id' => $this->selectedLocationId,
@@ -131,12 +122,11 @@ class AdminDashboard extends Component
         session()->flash('message', 'Categoría eliminada.');
     }
 
-    // --- Productos (Filtrados por Categoría del Local) ---
+    // --- Productos ---
 
     public function editProduct($id)
     {
         $product = Product::find($id);
-        // Verificar que el producto pertenezca al local actual a través de su categoría
         if ($product && $product->category->location_id == $this->selectedLocationId) {
             $this->productId = $product->id;
             $this->name = $product->name;
@@ -152,16 +142,14 @@ class AdminDashboard extends Component
     {
         $this->validate([
             'name' => 'required',
-            'category_id' => 'required|exists:categories,id', // Validación simple
+            'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric',
             'image' => 'nullable|image|max:51200',
         ]);
 
-        // Seguridad extra: Verificar que la categoría elegida sea de este local
         $category = Category::find($this->category_id);
         if ($category->location_id != $this->selectedLocationId) {
             $this->addError('category_id', 'Categoría inválida.');
-
             return;
         }
 
@@ -210,14 +198,11 @@ class AdminDashboard extends Component
 
     public function render()
     {
-        // 1. Si no está logueado, mostrar login (manejado en vista)
-        // 2. Si está logueado pero no seleccionó local, cargamos lista de locales
         $locations = [];
         if ($this->isAuthenticated && !$this->selectedLocationId) {
             $locations = Location::all();
         }
 
-        // 3. Si seleccionó local, cargamos datos filtrados
         $categories = [];
         $products = [];
 
@@ -226,6 +211,7 @@ class AdminDashboard extends Component
                 ->withCount('products')
                 ->get();
 
+            // Inicio de la consulta base filtrada por Local
             $productsQuery = Product::query()
                 ->whereHas('category', function ($q) {
                     $q->where('location_id', $this->selectedLocationId);
@@ -233,8 +219,18 @@ class AdminDashboard extends Component
                 ->with('category')
                 ->latest();
 
+            // Lógica de Búsqueda Mejorada (Nombre O Categoría)
             if (!empty($this->search)) {
-                $productsQuery->where('name', 'like', '%' . $this->search . '%');
+                $term = '%' . $this->search . '%';
+
+                $productsQuery->where(function ($query) use ($term) {
+                    // Busca por nombre del producto
+                    $query->where('name', 'like', $term)
+                        // O busca por nombre de la categoría relacionada
+                        ->orWhereHas('category', function ($q) use ($term) {
+                            $q->where('name', 'like', $term);
+                        });
+                });
             }
 
             $products = $productsQuery->get();
