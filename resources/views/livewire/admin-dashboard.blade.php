@@ -126,7 +126,43 @@
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'create_category' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         🏷️ Categorías
                     </button>
+                    <button wire:click="changeView('qr')"
+                        class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'qr' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
+                        📱 QR Menu
+                    </button>
                 </div>
+
+                @if ($view === 'qr')
+                    <div
+                        class="flex flex-col items-center justify-center py-10 bg-white rounded-xl shadow-sm border border-gray-200">
+
+                        <div class="text-center mb-8">
+                            <h3 class="text-2xl font-bold text-panetto-dark mb-2">Código QR de la Sucursal</h3>
+                            <p class="text-gray-500">Este código dirige a: <br>
+                                <a href="{{ $qrUrl }}" target="_blank"
+                                    class="text-panetto-orange hover:underline font-mono text-sm">{{ $qrUrl }}</a>
+                            </p>
+                        </div>
+
+                        <div class="bg-white p-4 border-4 border-panetto-orange rounded-xl shadow-lg mb-8">
+                            {!! $qrSvg !!}
+                        </div>
+
+                        <button wire:click="downloadQr"
+                            class="flex items-center gap-2 bg-panetto-dark text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-black transition shadow-md active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Descargar QR para Imprimir
+                        </button>
+
+                        <p class="text-xs text-gray-400 mt-4">
+                            Se descargará en formato .SVG (Vectorial) para máxima calidad de impresión.
+                        </p>
+                    </div>
+                @endif
 
                 @if ($view === 'create_category')
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
@@ -137,8 +173,10 @@
                             </h3>
 
                             <form wire:submit.prevent="saveCategory">
-                                <label class="block mb-2 text-sm font-bold text-gray-700">Nombre de la categoría</label>
-                                <input type="text" wire:model="cat_name" placeholder="Ej: Cafetería, Panificados..."
+                                <label class="block mb-2 text-sm font-bold text-gray-700">Nombre de la
+                                    categoría</label>
+                                <input type="text" wire:model="cat_name"
+                                    placeholder="Ej: Cafetería, Panificados..."
                                     class="w-full p-3 border-2 border-gray-200 rounded-lg mb-4 focus:ring-2 focus:ring-panetto-orange focus:border-panetto-orange outline-none transition bg-gray-50 focus:bg-white">
 
                                 @error('cat_name')

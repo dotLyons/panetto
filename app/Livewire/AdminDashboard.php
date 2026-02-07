@@ -7,6 +7,12 @@ use App\Models\Location;
 use App\Models\Product;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+// --- IMPORTACIONES PARA EL QR (BaconQrCode v3) ---
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+// ------------------------------------------------
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -196,6 +202,41 @@ class AdminDashboard extends Component
         }
     }
 
+    // --- GENERADOR DE QR (Lógica Manual con BaconQrCode) ---
+
+    protected function generateQrSvg($url, $size = 250)
+    {
+        // Configuramos el renderizador para SVG
+        $renderer = new ImageRenderer(
+            new RendererStyle($size),
+            new SvgImageBackEnd()
+        );
+
+        // Creamos el escritor
+        $writer = new Writer($renderer);
+
+        // Retornamos el string del SVG
+        return $writer->writeString($url);
+    }
+
+    public function downloadQr()
+    {
+        $location = Location::find($this->selectedLocationId);
+
+        if (!$location) return;
+
+        // URL Pública
+        $url = route('menu.show', ['slug' => $location->slug]);
+
+        // Generamos contenido SVG grande para imprimir (500px)
+        $svgContent = $this->generateQrSvg($url, 500);
+
+        // Forzamos la descarga del archivo
+        return response()->streamDownload(function () use ($svgContent) {
+            echo $svgContent;
+        }, 'qr-' . $location->slug . '.svg');
+    }
+
     public function render()
     {
         $locations = [];
@@ -205,6 +246,8 @@ class AdminDashboard extends Component
 
         $categories = [];
         $products = [];
+        $qrSvg = ''; // Variable para almacenar el dibujo del QR
+        $qrUrl = ''; // Variable para mostrar la URL en texto
 
         if ($this->selectedLocationId) {
             $categories = Category::where('location_id', $this->selectedLocationId)
@@ -234,12 +277,21 @@ class AdminDashboard extends Component
             }
 
             $products = $productsQuery->get();
+
+            // --- Generación del QR para la vista ---
+            $location = Location::find($this->selectedLocationId);
+            if ($location) {
+                $qrUrl = route('menu.show', ['slug' => $location->slug]);
+                $qrSvg = $this->generateQrSvg($qrUrl, 250);
+            }
         }
 
         return view('livewire.admin-dashboard', [
             'locations' => $locations,
             'categories' => $categories,
             'products' => $products,
+            'qrSvg' => $qrSvg, // Pasamos el dibujo SVG a la vista
+            'qrUrl' => $qrUrl  // Pasamos la URL texto a la vista
         ]);
     }
 }
