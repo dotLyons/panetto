@@ -8,7 +8,7 @@
                 <p class="text-sm text-gray-500 font-semibold">Acceso Administrativo</p>
             </div>
             <form wire:submit.prevent="login">
-                <input type="password" wire:model="passcode" placeholder="Passcode (2468)" inputmode="numeric"
+                <input type="password" wire:model="passcode" placeholder="Passcode" inputmode="numeric"
                     class="w-full text-center text-xl p-3 border-2 border-gray-200 rounded-lg mb-4 focus:ring-2 focus:ring-panetto-orange focus:border-panetto-orange outline-none transition">
                 @error('passcode')
                     <span class="text-red-500 text-sm block mb-3 font-bold">{{ $message }}</span>

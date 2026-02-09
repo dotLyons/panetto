@@ -1,24 +1,64 @@
-<div class="min-h-screen pb-10 bg-panetto-light">
+<div class="min-h-screen pb-10 bg-panetto-light font-sans">
 
-    <header
-        class="bg-panetto-orange text-white py-2 px-4 shadow-md text-center sticky top-0 z-20 transition-all duration-300">
+    @if ($promoProducts->isNotEmpty())
+        <div class="relative w-full h-[220px] md:h-[350px] bg-gray-900 overflow-hidden shadow-xl">
 
-        <div class="flex justify-center mb-1">
-            <div class="bg-white rounded-full p-0.5 shadow-lg">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo Panetto" class="w-12 h-12 object-contain rounded-full">
+            <div class="flex overflow-x-auto snap-x snap-mandatory h-full w-full no-scrollbar">
+                @foreach ($promoProducts as $promo)
+                    <div class="snap-center shrink-0 w-full h-full relative">
+                        @if ($promo->image_path)
+                            <img src="{{ Storage::url($promo->image_path) }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full bg-panetto-orange flex items-center justify-center">
+                                <span class="text-4xl md:text-6xl">🔥</span>
+                            </div>
+                        @endif
+
+                        <div
+                            class="absolute bottom-0 left-0 w-full p-4 md:p-6 pt-10 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10 text-center">
+                            <span
+                                class="inline-block px-2 py-0.5 mb-1 text-[10px] font-bold tracking-widest text-white bg-panetto-orange rounded-full uppercase shadow-sm">
+                                Promo
+                            </span>
+                            <h2 class="text-xl md:text-2xl font-bold text-white leading-tight mb-0.5 drop-shadow-md">
+                                {{ $promo->name }}
+                            </h2>
+                            <p class="text-2xl md:text-3xl font-serif font-bold text-yellow-400 drop-shadow-sm">
+                                ${{ number_format($promo->price, 0) }}
+                            </p>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-        </div>
 
-        <h1 class="text-lg md:text-2xl font-serif font-bold tracking-wider uppercase drop-shadow-sm leading-tight">
-            {{ $locationName }}
-        </h1>
-        <p class="text-[10px] md:text-xs text-white/90 uppercase tracking-widest font-semibold">
-            Menú Digital
-        </p>
-    </header>
+            @if ($promoProducts->count() > 1)
+                <div class="absolute bottom-2 left-0 w-full flex justify-center gap-1 z-20">
+                    @foreach ($promoProducts as $index => $p)
+                        <div class="w-1.5 h-1.5 rounded-full bg-white/50"></div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    @else
+        <header
+            class="bg-panetto-orange text-white py-2 px-4 shadow-md text-center sticky top-0 z-20 transition-all duration-300">
+            <div class="flex justify-center mb-1">
+                <div class="bg-white rounded-full p-0.5 shadow-lg">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo Panetto"
+                        class="w-12 h-12 object-contain rounded-full">
+                </div>
+            </div>
+            <h1 class="text-lg md:text-2xl font-serif font-bold tracking-wider uppercase drop-shadow-sm leading-tight">
+                {{ $locationName }}
+            </h1>
+            <p class="text-[10px] md:text-xs text-white/90 uppercase tracking-widest font-semibold">
+                Menú Digital
+            </p>
+        </header>
+    @endif
 
     <div
-        class="sticky top-[105px] md:top-[120px] z-10 bg-panetto-light/95 backdrop-blur shadow-sm py-2 px-4 flex gap-2 overflow-x-auto no-scrollbar border-b border-panetto-orange/10">
+        class="sticky z-10 bg-panetto-light/95 backdrop-blur shadow-sm py-2 px-4 flex gap-2 overflow-x-auto no-scrollbar border-b border-panetto-orange/10 transition-all duration-300 {{ $promoProducts->isNotEmpty() ? 'top-0' : 'top-[105px] md:top-[120px]' }}">
         <button wire:click="selectCategory(null)"
             class="px-3 py-1 rounded-full whitespace-nowrap text-xs font-bold transition border border-transparent shadow-sm {{ is_null($selectedCategory) ? 'bg-panetto-orange text-white' : 'bg-white text-gray-600 border-gray-200 hover:border-panetto-orange/30' }}">
             Todos
