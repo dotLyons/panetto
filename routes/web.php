@@ -14,6 +14,33 @@ Route::get('/menu/{slug}', PublicMenu::class)->name('menu.show');
 
 Route::get('/sorteo', RaffleForm::class)->name('raffle.form');
 
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+
+// ... tus otras rutas ...
+
+Route::get('/sorteo/qr', function () {
+    // 1. Obtenemos la URL del sorteo
+    $url = route('raffle.form');
+
+    // 2. Configuramos el generador (Igual que en el Dashboard)
+    $renderer = new ImageRenderer(
+        new RendererStyle(500), // Tamaño grande para impresión
+        new SvgImageBackEnd()
+    );
+    $writer = new Writer($renderer);
+
+    // 3. Generamos el contenido SVG
+    $svgContent = $writer->writeString($url);
+
+    // 4. Forzamos la descarga
+    return response()->streamDownload(function () use ($svgContent) {
+        echo $svgContent;
+    }, 'qr-sorteo-panetto.svg');
+});
+
 // Redirección opcional: si entran a la raíz, mándalos a un local por defecto o a una landing
 Route::get('/', function () {
     return redirect()->route('admin.index');

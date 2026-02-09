@@ -38,7 +38,8 @@ class PublicMenu extends Component
         if ($promoCategory) {
             // Si existe la categoría, traemos sus productos para el carrusel
             $promoProducts = Product::where('category_id', $promoCategory->id)
-                ->where('is_available', true)
+                ->where('is_available', true) // Que haya stock
+                ->where('active', true)       // <--- NUEVO FILTRO: Que esté activo
                 ->latest()
                 ->get();
         }
@@ -52,7 +53,8 @@ class PublicMenu extends Component
             ->when($this->selectedCategory, function ($query) {
                 $query->where('category_id', $this->selectedCategory);
             })
-            ->where('is_available', true)
+            ->where('is_available', true) // Que haya stock
+            ->where('active', true)       // <--- NUEVO FILTRO: Que esté activo
             ->get();
 
         return view('livewire.public-menu', [

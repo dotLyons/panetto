@@ -44,6 +44,9 @@ class AdminDashboard extends Component
     public $currentImage;
     public $cat_name;
 
+    // NUEVO CAMPO: Estado del producto (Activo/Inactivo)
+    public $active = true;
+
     public function mount()
     {
         $this->isAuthenticated = Session::get('admin_logged_in', false);
@@ -103,7 +106,8 @@ class AdminDashboard extends Component
 
     public function resetForm()
     {
-        $this->reset(['name', 'description', 'price', 'category_id', 'image', 'productId', 'currentImage']);
+        // Agregamos 'active' al reset para que vuelva a true por defecto
+        $this->reset(['name', 'description', 'price', 'category_id', 'image', 'productId', 'currentImage', 'active']);
         $this->resetErrorBag();
     }
 
@@ -139,6 +143,7 @@ class AdminDashboard extends Component
             $this->description = $product->description;
             $this->price = $product->price;
             $this->category_id = $product->category_id;
+            $this->active = $product->active; // Cargar estado actual
             $this->currentImage = $product->image_path;
             $this->view = 'create_product';
         }
@@ -151,6 +156,7 @@ class AdminDashboard extends Component
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric',
             'image' => 'nullable|image|max:51200',
+            'active' => 'boolean' // Validación simple
         ]);
 
         $category = Category::find($this->category_id);
@@ -166,6 +172,7 @@ class AdminDashboard extends Component
                 'description' => $this->description,
                 'price' => $this->price,
                 'category_id' => $this->category_id,
+                'active' => $this->active, // Guardar estado
             ];
             if ($this->image) {
                 if ($product->image_path) {
@@ -182,12 +189,24 @@ class AdminDashboard extends Component
                 'description' => $this->description,
                 'price' => $this->price,
                 'category_id' => $this->category_id,
+                'active' => $this->active, // Guardar estado
                 'image_path' => $path,
             ]);
             session()->flash('message', 'Producto creado.');
         }
         $this->resetForm();
         $this->view = 'list';
+    }
+
+    // NUEVO MÉTODO: Toggle rápido desde la lista
+    public function toggleProductVisibility($id)
+    {
+        $product = Product::find($id);
+        // Verificar pertenencia al local
+        if ($product && $product->category->location_id == $this->selectedLocationId) {
+            $product->active = !$product->active;
+            $product->save();
+        }
     }
 
     public function deleteProduct($id)

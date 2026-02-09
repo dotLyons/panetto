@@ -645,6 +645,7 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property bool $is_available
+     * @property bool $active
      * @property float $price
      * @property string|null $image_path
      * @property string|null $description
@@ -658,6 +659,7 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<Product>|Product whereDescription($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Product>|Product whereImagePath($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Product>|Product wherePrice($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<Product>|Product whereActive($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Product>|Product whereIsAvailable($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Product>|Product whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<Product>|Product whereUpdatedAt($value)
