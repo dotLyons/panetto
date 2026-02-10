@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class RaffleEntry extends Model
 {
     protected $fillable = [
-        'dni', 
-        'last_name', 
-        'name', 
-        'phone', 
-        'ticket_number', 
+        'dni',
+        'last_name',
+        'name',
+        'phone',
+        'table_number',
+        'visit_time',
         'rating'
     ];
 }

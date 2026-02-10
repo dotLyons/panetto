@@ -69,11 +69,37 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">N° de Ticket</label>
-                        <input type="text" wire:model="ticket_number"
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">N° de Mesa</label>
+                        <input type="text" wire:model="table_number"
                             class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition font-mono text-lg text-center tracking-widest"
                             placeholder="000-000">
-                        @error('ticket_number') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
+                        @error('table_number') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Hora (HH)</label>
+                            <select wire:model="visit_hour"
+                                class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition text-center">
+                                <option value="">HH</option>
+                                @foreach(range(0,23) as $h)
+                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }}</option>
+                                @endforeach
+                            </select>
+                            @error('visit_hour') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Minuto (MM)</label>
+                            <select wire:model="visit_minute"
+                                class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition text-center">
+                                <option value="">MM</option>
+                                @foreach(range(0,59) as $m)
+                                    <option value="{{ $m }}">{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}</option>
+                                @endforeach
+                            </select>
+                            @error('visit_minute') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
+                        </div>
                     </div>
 
                     <div class="pt-4 border-t border-gray-100 text-center">

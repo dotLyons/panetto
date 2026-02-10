@@ -972,7 +972,8 @@ namespace App\Models {
      * @property \Illuminate\Support\Carbon|null $updated_at
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property bool $rating
-     * @property string $ticket_number
+     * @property string|null $visit_time
+     * @property string $table_number
      * @property string $phone
      * @property string $name
      * @property string $last_name
@@ -983,7 +984,8 @@ namespace App\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereLastName($value)
      * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereName($value)
      * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry wherePhone($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereTicketNumber($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereTableNumber($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereVisitTime($value)
      * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereRating($value)
      * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<RaffleEntry>|RaffleEntry whereUpdatedAt($value)
