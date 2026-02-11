@@ -21,7 +21,7 @@
                     <p class="text-gray-500 mb-6">Mucha suerte en el sorteo.</p>
 
                     <button wire:click="$set('submitted', false)" class="text-panetto-orange font-bold hover:underline">
-                        Registrar otro ticket
+                        Registrar otro comensal
                     </button>
 
                     <div class="mt-8 pt-4 border-t border-gray-100">
@@ -70,9 +70,9 @@
 
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">N° de Mesa</label>
-                        <input type="text" wire:model="table_number"
-                            class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition font-mono text-lg text-center tracking-widest"
-                            placeholder="000-000">
+                        <input type="number" wire:model="table_number"
+                            class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition font-bold text-lg text-center"
+                            placeholder="Ej: 5">
                         @error('table_number') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
                     </div>
 
@@ -80,22 +80,21 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Hora (HH)</label>
                             <select wire:model="visit_hour"
-                                class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition text-center">
-                                <option value="">HH</option>
+                                class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition text-center cursor-pointer">
+                                <option value="">Hora</option>
                                 @foreach(range(0,23) as $h)
-                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }}</option>
+                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }} hs</option>
                                 @endforeach
                             </select>
                             @error('visit_hour') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Minuto (MM)</label>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Minutos (MM)</label>
                             <select wire:model="visit_minute"
-                                class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition text-center">
-                                <option value="">MM</option>
-                                @foreach(range(0,59) as $m)
-                                    <option value="{{ $m }}">{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}</option>
+                                class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition text-center cursor-pointer">
+                                <option value="">Min</option>
+                                @foreach(range(0,59, 5) as $m) <option value="{{ $m }}">{{ str_pad($m, 2, '0', STR_PAD_LEFT) }} min</option>
                                 @endforeach
                             </select>
                             @error('visit_minute') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
@@ -128,7 +127,7 @@
 
                     <button type="submit"
                         class="w-full bg-panetto-orange text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:bg-orange-600 transition transform active:scale-95 mt-4">
-                        ENVIAR CUPÓN
+                        ENVIAR
                     </button>
 
                     <p class="text-[10px] text-center text-gray-400 mt-4">
