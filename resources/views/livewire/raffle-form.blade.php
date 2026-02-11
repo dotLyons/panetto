@@ -94,7 +94,8 @@
                             <select wire:model="visit_minute"
                                 class="w-full p-3 bg-gray-50 border-2 border-gray-100 rounded-xl focus:border-panetto-orange focus:ring-0 outline-none transition text-center cursor-pointer">
                                 <option value="">Min</option>
-                                @foreach(range(0,59, 5) as $m) <option value="{{ $m }}">{{ str_pad($m, 2, '0', STR_PAD_LEFT) }} min</option>
+                                @foreach(range(0,59) as $m)
+                                    <option value="{{ $m }}">{{ str_pad($m, 2, '0', STR_PAD_LEFT) }} min</option>
                                 @endforeach
                             </select>
                             @error('visit_minute') <span class="text-red-500 text-xs font-bold">{{ $message }}</span> @enderror
