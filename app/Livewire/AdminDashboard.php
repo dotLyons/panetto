@@ -59,7 +59,7 @@ class AdminDashboard extends Component
 
     public function login()
     {
-        if ($this->passcode === '2468') {
+        if ($this->passcode === '12265000') {
             Session::put('admin_logged_in', true);
             $this->isAuthenticated = true;
             $this->passcode = '';
