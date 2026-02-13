@@ -9,10 +9,9 @@ use Illuminate\Support\Facades\Route;
 // Ruta Admin (igual)
 Route::get('/admin-panel', AdminDashboard::class)->name('admin.index');
 
-// Página con la lista de participantes del sorteo
-Route::get('/admin/raffle-participants', function () {
-    return view('admin.raffle-participants');
-})->name('admin.raffle.participants');
+// Nota: la página de participantes ahora se gestiona desde el AdminDashboard
+// (vista integrada, protegida por la sesión administrativa). La ruta pública
+// previa fue removida para evitar acceso público.
 
 // Ruta Pública Dinámica (Ej: /menu/bar-centro)
 Route::get('/menu/{slug}', PublicMenu::class)->name('menu.show');

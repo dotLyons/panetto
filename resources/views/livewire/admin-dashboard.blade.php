@@ -126,10 +126,10 @@
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'create_category' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         🏷️ Categorías
                     </button>
-                    <a href="{{ route('admin.raffle.participants') }}"
-                        class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100">
+                    <button wire:click="changeView('raffle_participants')"
+                        class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'raffle_participants' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         🎟️ Sorteo
-                    </a>
+                    </button>
                     <button wire:click="changeView('qr')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'qr' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         📱 QR Menu
@@ -165,6 +165,12 @@
                         <p class="text-xs text-gray-400 mt-4">
                             Se descargará en formato .SVG (Vectorial) para máxima calidad de impresión.
                         </p>
+                    </div>
+                @endif
+
+                @if ($view === 'raffle_participants')
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        @livewire('raffle-participants')
                     </div>
                 @endif
 

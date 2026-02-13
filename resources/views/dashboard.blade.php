@@ -1,8 +1,8 @@
 <x-layouts.app :title="__('Dashboard')">
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="flex justify-end">
-            <a href="{{ route('admin.raffle.participants') }}" class="inline-block px-3 py-2 bg-blue-600 text-white rounded">
-                Ver participantes del sorteo
+            <a href="{{ route('admin.index') }}" class="inline-block px-3 py-2 bg-blue-600 text-white rounded">
+                Ir al panel administrativo
             </a>
         </div>
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
