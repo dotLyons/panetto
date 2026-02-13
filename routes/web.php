@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Route;
 // Ruta Admin (igual)
 Route::get('/admin-panel', AdminDashboard::class)->name('admin.index');
 
+// Página con la lista de participantes del sorteo
+Route::get('/admin/raffle-participants', function () {
+    return view('admin.raffle-participants');
+})->name('admin.raffle.participants');
+
 // Ruta Pública Dinámica (Ej: /menu/bar-centro)
 Route::get('/menu/{slug}', PublicMenu::class)->name('menu.show');
 
