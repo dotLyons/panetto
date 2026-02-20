@@ -93,10 +93,19 @@
                     </button>
                 </div>
 
-                <button wire:click="logout"
-                    class="text-xs bg-panetto-dark text-white px-4 py-2 rounded-lg hover:bg-black font-bold uppercase tracking-wide transition shadow-sm">
-                    Salir
-                </button>
+                <div class="flex items-center gap-2">
+                    <button wire:click="logoutAllUsers"
+                        onclick="confirm('⚠️ PELIGRO ⚠️ \n\n¿Estás seguro? Esto cerrará todas las sesiones activas en el sistema, incluyéndote a ti.') || event.stopImmediatePropagation()"
+                        class="text-xs bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-lg hover:bg-red-200 font-bold transition shadow-sm"
+                        title="Cerrar sesiones globales">
+                        Cerrar Todo
+                    </button>
+
+                    <button wire:click="logout"
+                        class="text-xs bg-panetto-dark text-white px-4 py-2 rounded-lg hover:bg-black font-bold uppercase tracking-wide transition shadow-sm">
+                        Salir
+                    </button>
+                </div>
             </div>
 
             <div class="p-4 md:p-6 flex-1 bg-gray-50">
@@ -126,9 +135,9 @@
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'create_category' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         🏷️ Categorías
                     </button>
-                    <button wire:click="changeView('raffle_participants')"
-                        class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'raffle_participants' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
-                        🎟️ Sorteo
+                    <button wire:click="changeView('survey')"
+                        class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'survey' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
+                        📊 Encuestas
                     </button>
                     <button wire:click="changeView('qr')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'qr' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
@@ -152,25 +161,176 @@
                             {!! $qrSvg !!}
                         </div>
 
-                        <button wire:click="downloadQr"
-                            class="flex items-center gap-2 bg-panetto-dark text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-black transition shadow-md active:scale-95">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Descargar QR para Imprimir
-                        </button>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button wire:click="downloadQr"
+                                class="flex items-center gap-2 bg-panetto-dark text-white px-6 py-3 rounded-xl font-bold text-sm md:text-base hover:bg-black transition shadow-md active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Descargar QR Menú
+                            </button>
 
-                        <p class="text-xs text-gray-400 mt-4">
-                            Se descargará en formato .SVG (Vectorial) para máxima calidad de impresión.
-                        </p>
+                            <a href="{{ route('survey.qr') }}" target="_blank"
+                                class="flex items-center gap-2 bg-white text-panetto-orange border-2 border-panetto-orange px-6 py-3 rounded-xl font-bold text-sm md:text-base hover:bg-orange-50 transition shadow-sm active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Descargar QR Encuesta
+                            </a>
+                        </div>
                     </div>
                 @endif
 
-                @if ($view === 'raffle_participants')
-                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-                        @livewire('raffle-participants')
+                @if ($view === 'survey')
+                    <div class="flex flex-col h-full">
+                        <div class="mb-6 flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-panetto-dark">Resultados de Encuestas</h3>
+                            <span
+                                class="bg-panetto-orange text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                {{ count($surveys) }} Respuestas
+                            </span>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm bg-white">
+                            <table class="w-full text-left border-collapse min-w-[900px]">
+                                <thead
+                                    class="bg-panetto-accent/30 text-panetto-dark text-xs uppercase font-bold tracking-wider">
+                                    <tr>
+                                        <th class="p-4 rounded-tl-xl">Cliente / Contacto</th>
+                                        <th class="p-4 text-center">Visita</th>
+                                        <th class="p-4">¿Viene con Niños?</th>
+                                        <th class="p-4">¿Plaza útil?</th>
+                                        <th class="p-4 rounded-tr-xl">Fidelidad (Si hubiera plaza)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 text-sm">
+                                    @forelse($surveys as $survey)
+                                        <tr class="hover:bg-panetto-accent/10 transition group">
+                                            <td class="p-4">
+                                                <span class="font-bold text-gray-800 block">{{ $survey->name }}
+                                                    {{ $survey->last_name }}</span>
+                                                @if ($survey->email)
+                                                    <span
+                                                        class="text-xs text-blue-600 font-semibold mt-1 block flex items-center gap-1">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                                        </svg>
+                                                        {{ $survey->email }}
+                                                    </span>
+                                                @endif
+                                                <span
+                                                    class="text-xs text-gray-500 font-medium mt-1 block flex items-center gap-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                                    </svg>
+                                                    {{ $survey->phone }}
+                                                </span>
+                                                <span class="text-xs text-gray-400 block mt-1">DNI:
+                                                    {{ $survey->dni }}</span>
+                                            </td>
+
+                                            <td class="p-4 text-center">
+                                                @if ($survey->visit_time)
+                                                    <span
+                                                        class="bg-orange-50 text-panetto-orange border border-orange-100 font-bold px-3 py-1.5 rounded-lg inline-flex items-center gap-1">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
+                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                        {{ $survey->visit_time }} hs
+                                                    </span>
+                                                @else
+                                                    <span class="text-xs text-gray-400 font-medium">No indicó</span>
+                                                @endif
+                                            </td>
+
+                                            <td class="p-4">
+                                                <span
+                                                    class="font-bold {{ $survey->brings_kids == 'No' ? 'text-gray-500' : 'text-panetto-dark' }}">
+                                                    {{ $survey->brings_kids }}
+                                                </span>
+
+                                                @if ($survey->kids_ages && is_array($survey->kids_ages) && count($survey->kids_ages) > 0)
+                                                    <div class="mt-2 flex flex-wrap gap-1">
+                                                        @foreach ($survey->kids_ages as $age)
+                                                            <span
+                                                                class="text-[10px] bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full font-bold">
+                                                                {{ $age }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </td>
+
+                                            <td class="p-4">
+                                                @php
+                                                    $utilColor = match ($survey->useful_play_area) {
+                                                        'Muy útil' => 'text-green-600 bg-green-50 border-green-200',
+                                                        'Algo útil' => 'text-yellow-600 bg-yellow-50 border-yellow-200',
+                                                        'Me da igual' => 'text-gray-600 bg-gray-50 border-gray-200',
+                                                        default => 'text-red-600 bg-red-50 border-red-200',
+                                                    };
+                                                @endphp
+                                                <span
+                                                    class="text-xs font-bold border px-2.5 py-1 rounded-lg {{ $utilColor }}">
+                                                    {{ $survey->useful_play_area }}
+                                                </span>
+                                            </td>
+
+                                            <td class="p-4">
+                                                @php
+                                                    $fidelidadColor = match ($survey->visit_more_often) {
+                                                        'Sí, mucho más seguido' => 'text-green-600 font-bold',
+                                                        'Un poco más seguido' => 'text-blue-600 font-bold',
+                                                        'Igual que ahora' => 'text-gray-600 font-medium',
+                                                        default => 'text-red-500 font-medium',
+                                                    };
+                                                @endphp
+                                                <span class="{{ $fidelidadColor }} flex items-center gap-1">
+                                                    @if ($survey->visit_more_often == 'Sí, mucho más seguido')
+                                                        ⭐
+                                                    @endif
+                                                    {{ $survey->visit_more_often }}
+                                                </span>
+                                                <div class="text-[10px] text-gray-400 mt-2">
+                                                    Enviado: {{ $survey->created_at->format('d/m/Y H:i') }}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="p-12 text-center text-gray-400">
+                                                <div class="flex flex-col items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                        class="h-12 w-12 mb-4 opacity-40 text-panetto-orange"
+                                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    <p class="font-bold text-lg text-gray-700">Aún no hay encuestas
+                                                        respondidas.</p>
+                                                    <p class="text-sm mt-1">Cuando los clientes completen el
+                                                        formulario, aparecerán aquí.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 @endif
 

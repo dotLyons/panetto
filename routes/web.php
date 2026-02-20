@@ -1,10 +1,17 @@
 <?php
 
+use App\Http\Controllers\GoogleController;
 use App\Livewire\AdminDashboard;
 use App\Livewire\PublicMenu;
 use App\Livewire\RaffleForm;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\SurveyForm;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+use Illuminate\Support\Facades\Auth;
 
 // Ruta Admin (igual)
 Route::get('/admin-panel', AdminDashboard::class)->name('admin.index');
@@ -18,46 +25,52 @@ Route::get('/menu/{slug}', PublicMenu::class)->name('menu.show');
 
 Route::get('/sorteo', RaffleForm::class)->name('raffle.form');
 
-use BaconQrCode\Renderer\ImageRenderer;
-use BaconQrCode\Renderer\Image\SvgImageBackEnd;
-use BaconQrCode\Renderer\RendererStyle\RendererStyle;
-use BaconQrCode\Writer;
-
-// ... tus otras rutas ...
-
 Route::get('/sorteo/qr', function () {
-    // 1. Obtenemos la URL del sorteo
     $url = route('raffle.form');
 
-    // 2. Configuramos el generador (Igual que en el Dashboard)
     $renderer = new ImageRenderer(
         new RendererStyle(500), // Tamaño grande para impresión
         new SvgImageBackEnd()
     );
     $writer = new Writer($renderer);
 
-    // 3. Generamos el contenido SVG
     $svgContent = $writer->writeString($url);
 
-    // 4. Forzamos la descarga
     return response()->streamDownload(function () use ($svgContent) {
         echo $svgContent;
     }, 'qr-sorteo-panetto.svg');
 });
 
-// Redirección opcional: si entran a la raíz, mándalos a un local por defecto o a una landing
+Route::get('/encuesta', SurveyForm::class)->name('survey.form');
+
+Route::get('/encuesta/qr', function () {
+    $url = route('survey.form');
+
+    $renderer = new \BaconQrCode\Renderer\ImageRenderer(
+        new \BaconQrCode\Renderer\RendererStyle\RendererStyle(500),
+        new \BaconQrCode\Renderer\Image\SvgImageBackEnd()
+    );
+    $writer = new \BaconQrCode\Writer($renderer);
+    $svgContent = $writer->writeString($url);
+
+    return response()->streamDownload(function () use ($svgContent) {
+        echo $svgContent;
+    }, 'qr-encuesta-panetto.svg');
+})->name('survey.qr');
+
+// Rutas de Google Auth
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+
+// Ruta para que el cliente desvincule su cuenta de Google y use otra
+Route::post('/logout-public', function () {
+    session()->forget('survey_google_user'); // Borra la sesión temporal en lugar de cerrar sesión de Auth
+    return redirect()->route('survey.form');
+})->name('logout.public');
+
 Route::get('/', function () {
     return redirect()->route('admin.index');
-    // OJO: Asegúrate de crear un local con slug 'bar-centro' en la BD
 });
-
-//Route::get('/', function () {
-//    return view('welcome');
-//})->name('home');
-
-//Route::view('dashboard', 'dashboard')
-//    ->middleware(['auth', 'verified'])
-//    ->name('dashboard');
 
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');

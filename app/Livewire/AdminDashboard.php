@@ -5,14 +5,15 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\Location;
 use App\Models\Product;
+use App\Models\SurveyEntry;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-// --- IMPORTACIONES PARA EL QR (BaconQrCode v3) ---
+use Illuminate\Support\Facades\DB;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
-// ------------------------------------------------
+
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -20,21 +21,18 @@ class AdminDashboard extends Component
 {
     use WithFileUploads;
 
-    // Estados de Flujo
     public $passcode = '';
 
     public $isAuthenticated = false;
 
-    public $selectedLocationId = null; // ID del local seleccionado
+    public $selectedLocationId = null;
 
     public $selectedLocationName = '';
 
-    // Navegación interna
     public $view = 'list';
 
     public $search = '';
 
-    // Inputs Formulario
     public $productId = null;
     public $name;
     public $description;
@@ -44,7 +42,6 @@ class AdminDashboard extends Component
     public $currentImage;
     public $cat_name;
 
-    // NUEVO CAMPO: Estado del producto (Activo/Inactivo)
     public $active = true;
 
     public function mount()
@@ -94,6 +91,25 @@ class AdminDashboard extends Component
         $this->selectedLocationId = null;
     }
 
+    // --- NUEVO MÉTODO: Cerrar TODAS las sesiones del sistema ---
+    public function logoutAllUsers()
+    {
+        $driver = config('session.driver');
+
+        if ($driver === 'database') {
+            DB::table('sessions')->truncate();
+        } elseif ($driver === 'file') {
+            $sessionPath = storage_path('framework/sessions');
+            foreach (glob("$sessionPath/*") as $file) {
+                if (basename($file) !== '.gitignore') {
+                    @unlink($file);
+                }
+            }
+        }
+
+        return redirect()->route('login')->with('message', 'Se han cerrado todas las sesiones del sistema.');
+    }
+
     // --- Helpers UI ---
 
     public function changeView($viewName)
@@ -106,12 +122,10 @@ class AdminDashboard extends Component
 
     public function resetForm()
     {
-        // Agregamos 'active' al reset para que vuelva a true por defecto
         $this->reset(['name', 'description', 'price', 'category_id', 'image', 'productId', 'currentImage', 'active']);
         $this->resetErrorBag();
     }
 
-    // --- Categorías ---
 
     public function saveCategory()
     {
@@ -132,7 +146,6 @@ class AdminDashboard extends Component
         session()->flash('message', 'Categoría eliminada.');
     }
 
-    // --- Productos ---
 
     public function editProduct($id)
     {
@@ -143,7 +156,7 @@ class AdminDashboard extends Component
             $this->description = $product->description;
             $this->price = $product->price;
             $this->category_id = $product->category_id;
-            $this->active = $product->active; // Cargar estado actual
+            $this->active = $product->active;
             $this->currentImage = $product->image_path;
             $this->view = 'create_product';
         }
@@ -156,7 +169,7 @@ class AdminDashboard extends Component
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric',
             'image' => 'nullable|image|max:51200',
-            'active' => 'boolean' // Validación simple
+            'active' => 'boolean'
         ]);
 
         $category = Category::find($this->category_id);
@@ -172,7 +185,7 @@ class AdminDashboard extends Component
                 'description' => $this->description,
                 'price' => $this->price,
                 'category_id' => $this->category_id,
-                'active' => $this->active, // Guardar estado
+                'active' => $this->active,
             ];
             if ($this->image) {
                 if ($product->image_path) {
@@ -189,7 +202,7 @@ class AdminDashboard extends Component
                 'description' => $this->description,
                 'price' => $this->price,
                 'category_id' => $this->category_id,
-                'active' => $this->active, // Guardar estado
+                'active' => $this->active,
                 'image_path' => $path,
             ]);
             session()->flash('message', 'Producto creado.');
@@ -198,11 +211,9 @@ class AdminDashboard extends Component
         $this->view = 'list';
     }
 
-    // NUEVO MÉTODO: Toggle rápido desde la lista
     public function toggleProductVisibility($id)
     {
         $product = Product::find($id);
-        // Verificar pertenencia al local
         if ($product && $product->category->location_id == $this->selectedLocationId) {
             $product->active = !$product->active;
             $product->save();
@@ -221,20 +232,16 @@ class AdminDashboard extends Component
         }
     }
 
-    // --- GENERADOR DE QR (Lógica Manual con BaconQrCode) ---
 
     protected function generateQrSvg($url, $size = 250)
     {
-        // Configuramos el renderizador para SVG
         $renderer = new ImageRenderer(
             new RendererStyle($size),
             new SvgImageBackEnd()
         );
 
-        // Creamos el escritor
         $writer = new Writer($renderer);
 
-        // Retornamos el string del SVG
         return $writer->writeString($url);
     }
 
@@ -244,13 +251,10 @@ class AdminDashboard extends Component
 
         if (!$location) return;
 
-        // URL Pública
         $url = route('menu.show', ['slug' => $location->slug]);
 
-        // Generamos contenido SVG grande para imprimir (500px)
         $svgContent = $this->generateQrSvg($url, 500);
 
-        // Forzamos la descarga del archivo
         return response()->streamDownload(function () use ($svgContent) {
             echo $svgContent;
         }, 'qr-' . $location->slug . '.svg');
@@ -265,15 +269,15 @@ class AdminDashboard extends Component
 
         $categories = [];
         $products = [];
-        $qrSvg = ''; // Variable para almacenar el dibujo del QR
-        $qrUrl = ''; // Variable para mostrar la URL en texto
+        $surveys = [];
+        $qrSvg = '';
+        $qrUrl = '';
 
         if ($this->selectedLocationId) {
             $categories = Category::where('location_id', $this->selectedLocationId)
                 ->withCount('products')
                 ->get();
 
-            // Inicio de la consulta base filtrada por Local
             $productsQuery = Product::query()
                 ->whereHas('category', function ($q) {
                     $q->where('location_id', $this->selectedLocationId);
@@ -281,14 +285,11 @@ class AdminDashboard extends Component
                 ->with('category')
                 ->latest();
 
-            // Lógica de Búsqueda Mejorada (Nombre O Categoría)
             if (!empty($this->search)) {
                 $term = '%' . $this->search . '%';
 
                 $productsQuery->where(function ($query) use ($term) {
-                    // Busca por nombre del producto
                     $query->where('name', 'like', $term)
-                        // O busca por nombre de la categoría relacionada
                         ->orWhereHas('category', function ($q) use ($term) {
                             $q->where('name', 'like', $term);
                         });
@@ -297,7 +298,10 @@ class AdminDashboard extends Component
 
             $products = $productsQuery->get();
 
-            // --- Generación del QR para la vista ---
+            if ($this->view === 'survey') {
+                $surveys = SurveyEntry::latest()->get();
+            }
+
             $location = Location::find($this->selectedLocationId);
             if ($location) {
                 $qrUrl = route('menu.show', ['slug' => $location->slug]);
@@ -309,8 +313,9 @@ class AdminDashboard extends Component
             'locations' => $locations,
             'categories' => $categories,
             'products' => $products,
-            'qrSvg' => $qrSvg, // Pasamos el dibujo SVG a la vista
-            'qrUrl' => $qrUrl  // Pasamos la URL texto a la vista
+            'surveys' => $surveys,
+            'qrSvg' => $qrSvg,
+            'qrUrl' => $qrUrl
         ]);
     }
 }
