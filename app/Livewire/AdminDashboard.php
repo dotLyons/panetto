@@ -18,6 +18,7 @@ use BaconQrCode\Writer;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\On;
 
 class AdminDashboard extends Component
 {
@@ -43,6 +44,11 @@ class AdminDashboard extends Component
     public $active = true;
 
     public $winner = null;
+
+    // Salon Control Modal
+    public $showSalonModal = false;
+    public $salonControlId = null;
+    public $salonModalKey = 0;
 
     public function mount()
     {
@@ -72,6 +78,31 @@ class AdminDashboard extends Component
         if ($viewName === 'create_product') {
             $this->resetForm();
         }
+    }
+
+    #[On('salon-control-saved')]
+    public function refreshSalonControls()
+    {
+        // Re-render para actualizar la tabla
+    }
+
+    public function openSalonControl($id)
+    {
+        $this->salonControlId = $id;
+        $this->salonModalKey++;
+        $this->showSalonModal = true;
+    }
+
+    public function openNewSalonControl()
+    {
+        $this->salonControlId = null;
+        $this->salonModalKey++;
+        $this->showSalonModal = true;
+    }
+
+    public function closeSalonModal()
+    {
+        $this->showSalonModal = false;
     }
 
     public function resetForm()
@@ -230,6 +261,7 @@ class AdminDashboard extends Component
         $products = [];
         $surveys = [];
         $raffles = [];
+        $salonControls = [];
         $qrSvg = '';
         $qrUrl = '';
 
@@ -266,6 +298,10 @@ class AdminDashboard extends Component
                 $raffles = RaffleEntry::latest()->get();
             }
 
+            if ($this->view === 'salon_controls') {
+                $salonControls = \App\Models\SalonControl::where('location_id', $this->selectedLocationId)->latest()->get();
+            }
+
             $location = Location::find($this->selectedLocationId);
             if ($location) {
                 $qrUrl = route('menu.show', ['slug' => $location->slug]);
@@ -278,6 +314,7 @@ class AdminDashboard extends Component
             'products' => $products,
             'surveys' => $surveys,
             'raffles' => $raffles,
+            'salonControls' => $salonControls,
             'qrSvg' => $qrSvg,
             'qrUrl' => $qrUrl
         ]);

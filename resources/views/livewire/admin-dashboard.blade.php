@@ -1,4 +1,5 @@
-<div class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10">
+<div x-data="{}"
+class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 relative">
 
     @if(!$selectedLocationId)
         <div class="w-full max-w-md mt-10">
@@ -73,6 +74,10 @@
                     <button wire:click="changeView('raffle')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'raffle' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         🎁 Sorteo
+                    </button>
+                    <button wire:click="changeView('salon_controls')"
+                        class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'salon_controls' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
+                        📝 Controles Salón
                     </button>
                     <button wire:click="changeView('qr')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'qr' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
@@ -371,6 +376,88 @@
                                                     </svg>
                                                     <p class="font-bold text-lg text-gray-700">Aún no hay participantes.</p>
                                                     <p class="text-sm mt-1">Los participantes del sorteo aparecerán aquí.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($view === 'salon_controls')
+                    <div class="flex flex-col h-full">
+                        <div class="mb-6 flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-panetto-dark">Planillas de Control de Salón</h3>
+                            <div class="flex items-center gap-4">
+                                <span class="bg-panetto-orange text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm max-h-fit">
+                                    {{ count($salonControls) }} Planillas
+                                </span>
+                                <button type="button" wire:click="openNewSalonControl"
+                                    class="bg-panetto-dark text-white text-sm font-bold px-4 py-2 rounded-lg shadow-sm hover:bg-black transition flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Nuevo Reporte
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm bg-white">
+                            <table class="w-full text-left border-collapse min-w-[900px]">
+                                <thead class="bg-panetto-accent/30 text-panetto-dark text-xs uppercase font-bold tracking-wider">
+                                    <tr>
+                                        <th class="p-4 rounded-tl-xl truncate">ID</th>
+                                        <th class="p-4">Fecha</th>
+                                        <th class="p-4">Turno</th>
+                                        <th class="p-4">Encargado</th>
+                                        <th class="p-4">Registrada</th>
+                                        <th class="p-4 text-center rounded-tr-xl">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 text-sm">
+                                    @forelse($salonControls as $control)
+                                        <tr class="hover:bg-panetto-accent/10 transition group">
+                                            <td class="p-4">
+                                                <span class="font-bold text-gray-800">#{{ $control->id }}</span>
+                                            </td>
+                                            <td class="p-4 text-gray-700 font-medium whitespace-nowrap">
+                                                {{ $control->date ? $control->date->format('d/m/Y') : '-' }}
+                                            </td>
+                                            <td class="p-4">
+                                                <span class="bg-orange-50 text-panetto-orange border border-orange-100 font-bold px-3 py-1 rounded-lg">
+                                                    {{ $control->shift }}
+                                                </span>
+                                            </td>
+                                            <td class="p-4 font-bold text-gray-800">
+                                                {{ $control->manager }}
+                                            </td>
+                                            <td class="p-4 text-xs text-gray-500">
+                                                {{ $control->created_at->setTimezone('America/Argentina/Buenos_Aires')->format('d/m/Y H:i') }}
+                                            </td>
+                                            <td class="p-4 text-center">
+                                                <div class="flex items-center justify-center gap-2">
+                                                    <button type="button" 
+                                                        wire:click="openSalonControl({{ $control->id }})"
+                                                        class="text-blue-600 bg-blue-50 border border-blue-200 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg flex items-center gap-1 font-bold shadow-sm transition">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                        Visualizar
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" class="p-12 text-center text-gray-400">
+                                                <div class="flex flex-col items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 opacity-40 text-panetto-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    <p class="font-bold text-lg text-gray-700">Aún no hay planillas registradas para esta sucursal.</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -756,5 +843,26 @@
                 @endif
             </div>
         </div>
+        
+        <!-- Modal Planilla Control Salón -->
+        @if($showSalonModal)
+            <div class="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto relative custom-scrollbar">
+                    
+                    <!-- Botón Cerrar fijo -->
+                    <button type="button" wire:click="closeSalonModal"
+                        class="sticky top-4 right-4 z-50 float-right bg-black text-white p-2 rounded-lg hover:bg-gray-800 transition shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <div class="w-full">
+                        @livewire('salon-control-form', ['controlId' => $salonControlId], key('salon-form-' . $salonModalKey))
+                    </div>
+                </div>
+            </div>
+        @endif
     @endif
+
 </div>

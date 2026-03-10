@@ -7,6 +7,7 @@ use App\Livewire\RaffleForm;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\SurveyForm;
+use App\Livewire\SalonControlForm;
 use BaconQrCode\Renderer\ImageRenderer;
 use BaconQrCode\Renderer\Image\SvgImageBackEnd;
 use BaconQrCode\Renderer\RendererStyle\RendererStyle;
@@ -24,6 +25,15 @@ Route::get('/admin-panel', AdminDashboard::class)->name('admin.index')->middlewa
 Route::get('/menu/{slug}', PublicMenu::class)->name('menu.show');
 
 Route::get('/sorteo', RaffleForm::class)->name('raffle.form');
+Route::get('/control-salon', SalonControlForm::class)->name('salon-control.form');
+
+Route::get('/salon-control/pdf/{id}', function ($id) {
+    if (!Auth::check()) abort(403);
+    $control = \App\Models\SalonControl::findOrFail($id);
+    
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.salon-control', compact('control'));
+    return $pdf->stream('planilla-control-'.$control->id.'.pdf');
+})->name('salon-control.pdf')->middleware('auth');
 
 Route::get('/sorteo/qr', function () {
     $url = route('raffle.form');
