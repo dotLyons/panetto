@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Location;
 use App\Models\Product;
 use App\Models\SurveyEntry;
+use App\Models\RaffleEntry;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -20,10 +22,6 @@ use Livewire\WithFileUploads;
 class AdminDashboard extends Component
 {
     use WithFileUploads;
-
-    public $passcode = '';
-
-    public $isAuthenticated = false;
 
     public $selectedLocationId = null;
 
@@ -44,70 +42,26 @@ class AdminDashboard extends Component
 
     public $active = true;
 
+    public $winner = null;
+
     public function mount()
     {
-        $this->isAuthenticated = Session::get('admin_logged_in', false);
-        $this->selectedLocationId = Session::get('admin_location_id', null);
-
-        if ($this->selectedLocationId) {
-            $this->selectedLocationName = Location::find($this->selectedLocationId)->name ?? '';
-        }
-    }
-
-    public function login()
-    {
-        if ($this->passcode === '12265000') {
-            Session::put('admin_logged_in', true);
-            $this->isAuthenticated = true;
-            $this->passcode = '';
-        } else {
-            $this->addError('passcode', 'Código incorrecto');
-        }
-    }
-
-    public function selectLocation($id)
-    {
-        $location = Location::find($id);
-        if ($location) {
-            $this->selectedLocationId = $id;
-            $this->selectedLocationName = $location->name;
-            Session::put('admin_location_id', $id);
-            $this->view = 'list';
-        }
-    }
-
-    public function switchLocation()
-    {
-        $this->selectedLocationId = null;
-        Session::forget('admin_location_id');
-        $this->view = 'list';
-    }
-
-    public function logout()
-    {
-        Session::forget('admin_logged_in');
-        Session::forget('admin_location_id');
-        $this->isAuthenticated = false;
-        $this->selectedLocationId = null;
-    }
-
-    // --- NUEVO MÉTODO: Cerrar TODAS las sesiones del sistema ---
-    public function logoutAllUsers()
-    {
-        $driver = config('session.driver');
-
-        if ($driver === 'database') {
-            DB::table('sessions')->truncate();
-        } elseif ($driver === 'file') {
-            $sessionPath = storage_path('framework/sessions');
-            foreach (glob("$sessionPath/*") as $file) {
-                if (basename($file) !== '.gitignore') {
-                    @unlink($file);
-                }
-            }
+        if (!Auth::check()) {
+            $this->redirect(route('login'), navigate: true);
+            return;
         }
 
-        return redirect()->route('login')->with('message', 'Se han cerrado todas las sesiones del sistema.');
+        $user = Auth::user();
+        $locationId = $user->location_id ?? session('admin_location_id');
+
+        if (!$locationId) {
+            $this->redirect(route('login'), navigate: true);
+            return;
+        }
+
+        $this->selectedLocationId = $locationId;
+        $location = Location::find($this->selectedLocationId);
+        $this->selectedLocationName = $location?->name ?? '';
     }
 
     // --- Helpers UI ---
@@ -144,6 +98,16 @@ class AdminDashboard extends Component
     {
         Category::where('id', $id)->where('location_id', $this->selectedLocationId)->delete();
         session()->flash('message', 'Categoría eliminada.');
+    }
+
+    public function pickWinner()
+    {
+        $this->winner = RaffleEntry::inRandomOrder()->first();
+    }
+
+    public function resetWinner()
+    {
+        $this->winner = null;
     }
 
 
@@ -262,14 +226,10 @@ class AdminDashboard extends Component
 
     public function render()
     {
-        $locations = [];
-        if ($this->isAuthenticated && !$this->selectedLocationId) {
-            $locations = Location::all();
-        }
-
         $categories = [];
         $products = [];
         $surveys = [];
+        $raffles = [];
         $qrSvg = '';
         $qrUrl = '';
 
@@ -302,6 +262,10 @@ class AdminDashboard extends Component
                 $surveys = SurveyEntry::latest()->get();
             }
 
+            if ($this->view === 'raffle') {
+                $raffles = RaffleEntry::latest()->get();
+            }
+
             $location = Location::find($this->selectedLocationId);
             if ($location) {
                 $qrUrl = route('menu.show', ['slug' => $location->slug]);
@@ -310,10 +274,10 @@ class AdminDashboard extends Component
         }
 
         return view('livewire.admin-dashboard', [
-            'locations' => $locations,
             'categories' => $categories,
             'products' => $products,
             'surveys' => $surveys,
+            'raffles' => $raffles,
             'qrSvg' => $qrSvg,
             'qrUrl' => $qrUrl
         ]);

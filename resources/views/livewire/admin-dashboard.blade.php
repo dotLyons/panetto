@@ -1,74 +1,19 @@
 <div class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10">
 
-    @if (!$isAuthenticated)
-        <div
-            class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm text-center border-t-4 border-panetto-orange mt-10">
-            <div class="mb-6">
-                <h2 class="text-3xl font-bold text-panetto-orange uppercase tracking-wider">Panetto</h2>
-                <p class="text-sm text-gray-500 font-semibold">Acceso Administrativo</p>
-            </div>
-            <form wire:submit.prevent="login">
-                <input type="password" wire:model="passcode" placeholder="Passcode" inputmode="numeric"
-                    class="w-full text-center text-xl p-3 border-2 border-gray-200 rounded-lg mb-4 focus:ring-2 focus:ring-panetto-orange focus:border-panetto-orange outline-none transition">
-                @error('passcode')
-                    <span class="text-red-500 text-sm block mb-3 font-bold">{{ $message }}</span>
-                @enderror
-                <button type="submit"
-                    class="w-full bg-panetto-orange text-white py-3 rounded-lg font-bold hover:bg-orange-600 transition shadow-md active:scale-95">
-                    Desbloquear
-                </button>
-            </form>
-        </div>
-    @elseif(!$selectedLocationId)
-        <div class="w-full max-w-4xl mt-10">
-            <div class="flex justify-between items-center mb-8 pb-4 border-b border-panetto-orange/20">
-                <div>
-                    <h2 class="text-2xl font-bold text-panetto-dark">Seleccione Sucursal</h2>
-                    <p class="text-sm text-gray-500">Elija qué carta digital desea gestionar.</p>
-                </div>
-                <button wire:click="logout"
-                    class="text-sm text-red-500 hover:text-red-700 font-bold border border-red-200 px-4 py-2 rounded-lg hover:bg-red-50 transition">
-                    Cerrar Sesión
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                @forelse($locations as $loc)
-                    <button wire:click="selectLocation({{ $loc->id }})"
-                        class="bg-white p-8 rounded-xl shadow-md hover:shadow-xl hover:-translate-y-1 transition border-2 border-transparent hover:border-panetto-orange group text-left relative overflow-hidden">
-                        <div
-                            class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition text-panetto-orange">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-panetto-dark group-hover:text-panetto-orange transition">
-                            {{ $loc->name }}
-                        </h3>
-                        <p class="text-sm text-gray-500 mt-2 font-medium">Gestionar productos y categorías</p>
-                        <div class="mt-6 text-panetto-orange font-bold text-sm flex items-center">
-                            Ingresar <svg xmlns="http://www.w3.org/2000/svg"
-                                class="h-4 w-4 ml-1 group-hover:translate-x-1 transition" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
+    @if(!$selectedLocationId)
+        <div class="w-full max-w-md mt-10">
+            <div class="bg-white p-8 rounded-2xl shadow-xl border-t-4 border-red-500 text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <h2 class="text-xl font-bold text-gray-800 mb-2">Sin Sucursal Asignada</h2>
+                <p class="text-gray-500 mb-6">Su usuario no tiene una sucursal asignada. Contacte al administrador.</p>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="bg-red-500 text-white px-6 py-2 rounded-lg font-bold hover:bg-red-600 transition">
+                        Cerrar Sesión
                     </button>
-                @empty
-                    <div
-                        class="col-span-full bg-yellow-50 p-8 rounded-xl text-center text-yellow-800 border-2 border-yellow-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-yellow-500"
-                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <p class="font-bold text-lg">No se encontraron sucursales.</p>
-                        <p class="text-sm mt-2">Contacte al administrador de la base de datos.</p>
-                    </div>
-                @endforelse
+                </form>
             </div>
         </div>
     @else
@@ -81,30 +26,16 @@
                     <h2 class="font-bold text-lg flex items-center gap-2 text-panetto-dark">
                         <span class="text-2xl text-panetto-orange">🏢</span> {{ $selectedLocationName }}
                     </h2>
-
-                    <button wire:click="switchLocation"
-                        class="text-xs bg-gray-100 px-3 py-1.5 rounded-full hover:bg-gray-200 text-gray-600 border border-gray-200 font-semibold transition flex items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                        </svg>
-                        Cambiar Local
-                    </button>
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button wire:click="logoutAllUsers"
-                        onclick="confirm('⚠️ PELIGRO ⚠️ \n\n¿Estás seguro? Esto cerrará todas las sesiones activas en el sistema, incluyéndote a ti.') || event.stopImmediatePropagation()"
-                        class="text-xs bg-red-100 text-red-600 border border-red-200 px-3 py-2 rounded-lg hover:bg-red-200 font-bold transition shadow-sm"
-                        title="Cerrar sesiones globales">
-                        Cerrar Todo
-                    </button>
-
-                    <button wire:click="logout"
-                        class="text-xs bg-panetto-dark text-white px-4 py-2 rounded-lg hover:bg-black font-bold uppercase tracking-wide transition shadow-sm">
-                        Salir
-                    </button>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="text-xs bg-panetto-dark text-white px-4 py-2 rounded-lg hover:bg-black font-bold uppercase tracking-wide transition shadow-sm">
+                            Salir
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -138,6 +69,10 @@
                     <button wire:click="changeView('survey')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'survey' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         📊 Encuestas
+                    </button>
+                    <button wire:click="changeView('raffle')"
+                        class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'raffle' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
+                        🎁 Sorteo
                     </button>
                     <button wire:click="changeView('qr')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'qr' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
@@ -180,6 +115,16 @@
                                         d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Descargar QR Encuesta
+                            </a>
+
+                            <a href="{{ route('raffle.qr') }}" target="_blank"
+                                class="flex items-center gap-2 bg-white text-green-600 border-2 border-green-500 px-6 py-3 rounded-xl font-bold text-sm md:text-base hover:bg-green-50 transition shadow-sm active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Descargar QR Sorteo
                             </a>
                         </div>
                     </div>
@@ -324,6 +269,108 @@
                                                         respondidas.</p>
                                                     <p class="text-sm mt-1">Cuando los clientes completen el
                                                         formulario, aparecerán aquí.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
+                @if ($view === 'raffle')
+                    <div class="flex flex-col h-full">
+                        <div class="mb-6 flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-panetto-dark">Participantes del Sorteo</h3>
+                            <span class="bg-panetto-orange text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                                {{ count($raffles) }} Participantes
+                            </span>
+                        </div>
+
+                        @if($winner)
+                            <div class="mb-6 p-4 border-l-4 border-green-400 bg-green-50 rounded-md flex items-center gap-4">
+                                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-white shadow">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-sm text-gray-500">Ganador seleccionado</div>
+                                    <div class="text-lg font-semibold text-gray-800">{{ $winner->name }} {{ $winner->last_name }}</div>
+                                    <div class="text-sm text-gray-600">DNI: {{ $winner->dni }} · Tel: {{ $winner->phone }} · Mesa: {{ $winner->table_number }}</div>
+                                </div>
+                                <button wire:click="resetWinner" class="text-gray-400 hover:text-gray-600">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+
+                        <div class="flex gap-4 mb-6">
+                            <button wire:click="pickWinner" onclick="confirm('¿Deseas elegir un ganador al azar?') || event.stopImmediatePropagation()"
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-green-600 to-green-500 text-white rounded-lg shadow hover:from-green-700 transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                                </svg>
+                                Elegir ganador
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm bg-white">
+                            <table class="w-full text-left border-collapse min-w-[900px]">
+                                <thead class="bg-panetto-accent/30 text-panetto-dark text-xs uppercase font-bold tracking-wider">
+                                    <tr>
+                                        <th class="p-4 rounded-tl-xl">ID</th>
+                                        <th class="p-4">DNI</th>
+                                        <th class="p-4">Apellido</th>
+                                        <th class="p-4">Nombre</th>
+                                        <th class="p-4">Teléfono</th>
+                                        <th class="p-4">Mesa</th>
+                                        <th class="p-4">Hora</th>
+                                        <th class="p-4">Puntuación</th>
+                                        <th class="p-4 rounded-tr-xl">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 text-sm">
+                                    @forelse($raffles as $raffle)
+                                        <tr class="hover:bg-panetto-accent/10 transition {{ ($winner && $winner->id === $raffle->id) ? 'bg-yellow-50' : '' }}">
+                                            <td class="p-4 font-bold text-gray-700">{{ $raffle->id }}</td>
+                                            <td class="p-4">{{ $raffle->dni }}</td>
+                                            <td class="p-4">{{ $raffle->last_name }}</td>
+                                            <td class="p-4 font-bold text-gray-800">{{ $raffle->name }}</td>
+                                            <td class="p-4">{{ $raffle->phone }}</td>
+                                            <td class="p-4 text-center">
+                                                <span class="bg-orange-50 text-panetto-orange border border-orange-100 font-bold px-3 py-1.5 rounded-lg">
+                                                    {{ $raffle->table_number }}
+                                                </span>
+                                            </td>
+                                            <td class="p-4 text-center">
+                                                @if($raffle->visit_time)
+                                                    <span class="text-gray-600 font-medium">{{ $raffle->visit_time }} hs</span>
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="p-4">
+                                                <div class="flex gap-0.5">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <span class="{{ $i <= ($raffle->rating ?? 0) ? 'text-yellow-400' : 'text-gray-200' }}">★</span>
+                                                    @endfor
+                                                </div>
+                                            </td>
+                                            <td class="p-4 text-gray-500">{{ $raffle->created_at->format('d/m/Y H:i') }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="9" class="p-12 text-center text-gray-400">
+                                                <div class="flex flex-col items-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 opacity-40 text-panetto-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    <p class="font-bold text-lg text-gray-700">Aún no hay participantes.</p>
+                                                    <p class="text-sm mt-1">Los participantes del sorteo aparecerán aquí.</p>
                                                 </div>
                                             </td>
                                         </tr>

@@ -13,8 +13,8 @@ use BaconQrCode\Renderer\RendererStyle\RendererStyle;
 use BaconQrCode\Writer;
 use Illuminate\Support\Facades\Auth;
 
-// Ruta Admin (igual)
-Route::get('/admin-panel', AdminDashboard::class)->name('admin.index');
+// Ruta Admin (protegida por autenticación)
+Route::get('/admin-panel', AdminDashboard::class)->name('admin.index')->middleware('auth');
 
 // Nota: la página de participantes ahora se gestiona desde el AdminDashboard
 // (vista integrada, protegida por la sesión administrativa). La ruta pública
@@ -39,7 +39,7 @@ Route::get('/sorteo/qr', function () {
     return response()->streamDownload(function () use ($svgContent) {
         echo $svgContent;
     }, 'qr-sorteo-panetto.svg');
-});
+})->name('raffle.qr');
 
 Route::get('/encuesta', SurveyForm::class)->name('survey.form');
 
@@ -78,3 +78,13 @@ Route::get('/storage-link', function () {
 });
 
 require __DIR__ . '/settings.php';
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
