@@ -134,7 +134,7 @@
             </div>
 
             <div class="flex flex-col items-center">
-                <input type="text" wire:model="signature" placeholder="Escriba su firma textual" class="w-64 border-b-2 border-gray-300 focus:border-panetto-orange text-center pb-1 text-lg font-bold font-mono text-panetto-dark focus:outline-none bg-transparent transition print:border-black" {{ $previewMode ? 'disabled' : '' }}>
+                <span class="w-64 border-b-2 border-gray-300 text-center pb-1 text-lg font-bold font-mono text-panetto-dark print:border-black">{{ $manager }}</span>
                 <span class="text-xs text-gray-400 mt-2 uppercase tracking-widest font-bold print:text-black">Firma del Encargado</span>
             </div>
         </div>

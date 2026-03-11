@@ -140,7 +140,7 @@ class SalonControlForm extends Component
             'time_4' => $this->time_4 ?: null,
             'items_data' => $this->items_data,
             'general_observations' => $this->general_observations,
-            'signature' => $this->signature,
+            'signature' => $this->manager,
         ];
 
         if ($this->savedId) {
