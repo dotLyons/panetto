@@ -28,6 +28,8 @@ class AdminDashboard extends Component
 
     public $selectedLocationName = '';
 
+    public $isGerente = false;
+
     public $view = 'list';
 
     public $search = '';
@@ -58,16 +60,43 @@ class AdminDashboard extends Component
         }
 
         $user = Auth::user();
-        $locationId = $user->location_id ?? session('admin_location_id');
+        $this->isGerente = $user->hasRole('gerente');
+
+        if ($this->isGerente) {
+            // El gerente puede elegir sucursal; toma de sesión o la primera disponible
+            $locationId = session('admin_location_id') ?? $user->location_id ?? Location::first()?->id;
+        } else {
+            $locationId = $user->location_id;
+        }
 
         if (!$locationId) {
-            $this->redirect(route('login'), navigate: true);
             return;
         }
 
         $this->selectedLocationId = $locationId;
+        session(['admin_location_id' => $locationId]);
         $location = Location::find($this->selectedLocationId);
         $this->selectedLocationName = $location?->name ?? '';
+    }
+
+    public function selectLocation($locationId)
+    {
+        if (!$this->isGerente) {
+            return;
+        }
+
+        $location = Location::find($locationId);
+        if (!$location) {
+            return;
+        }
+
+        $this->selectedLocationId = $location->id;
+        $this->selectedLocationName = $location->name;
+        session(['admin_location_id' => $location->id]);
+
+        // Resetear la vista al listado
+        $this->view = 'list';
+        $this->resetForm();
     }
 
     // --- Helpers UI ---
@@ -316,7 +345,8 @@ class AdminDashboard extends Component
             'raffles' => $raffles,
             'salonControls' => $salonControls,
             'qrSvg' => $qrSvg,
-            'qrUrl' => $qrUrl
+            'qrUrl' => $qrUrl,
+            'locations' => $this->isGerente ? Location::all() : [],
         ]);
     }
 }

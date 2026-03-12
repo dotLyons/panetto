@@ -1,7 +1,7 @@
 <div x-data="{}"
 class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 relative">
 
-    @if(!$selectedLocationId)
+    @if(!$selectedLocationId && !$isGerente)
         <div class="w-full max-w-md mt-10">
             <div class="bg-white p-8 rounded-2xl shadow-xl border-t-4 border-red-500 text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,10 +23,23 @@ class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 
 
             <div
                 class="bg-white text-panetto-dark p-4 flex justify-between items-center sticky top-0 z-20 border-b border-gray-200 shadow-sm">
-                <div class="flex items-center gap-6">
-                    <h2 class="font-bold text-lg flex items-center gap-2 text-panetto-dark">
-                        <span class="text-2xl text-panetto-orange">🏢</span> {{ $selectedLocationName }}
-                    </h2>
+                <div class="flex items-center gap-4">
+                    <span class="text-2xl text-panetto-orange">🏢</span>
+                    @if($isGerente && count($locations) > 0)
+                        <select wire:change="selectLocation($event.target.value)"
+                            class="font-bold text-lg text-panetto-dark bg-orange-50 border-2 border-panetto-orange/30 rounded-lg px-3 py-1.5 cursor-pointer hover:border-panetto-orange focus:ring-2 focus:ring-panetto-orange focus:border-panetto-orange outline-none transition">
+                            @foreach($locations as $loc)
+                                <option value="{{ $loc->id }}" {{ $loc->id == $selectedLocationId ? 'selected' : '' }}>
+                                    {{ $loc->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="text-xs bg-gradient-to-r from-panetto-orange to-orange-500 text-white px-3 py-1 rounded-full font-bold shadow-sm uppercase tracking-wide">
+                            Gerente
+                        </span>
+                    @else
+                        <h2 class="font-bold text-lg text-panetto-dark">{{ $selectedLocationName }}</h2>
+                    @endif
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -67,6 +80,7 @@ class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'create_category' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         🏷️ Categorías
                     </button>
+                    @role('gerente')
                     <button wire:click="changeView('survey')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'survey' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         📊 Encuestas
@@ -75,6 +89,7 @@ class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'raffle' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         🎁 Sorteo
                     </button>
+                    @endrole
                     <button wire:click="changeView('salon_controls')"
                         class="px-5 py-2.5 rounded-t-lg font-bold transition flex items-center gap-2 {{ $view === 'salon_controls' ? 'bg-white text-panetto-orange border-b-2 border-panetto-orange shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100' }}">
                         📝 Controles Salón
@@ -112,6 +127,7 @@ class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 
                                 Descargar QR Menú
                             </button>
 
+                            @role('gerente')
                             <a href="{{ route('survey.qr') }}" target="_blank"
                                 class="flex items-center gap-2 bg-white text-panetto-orange border-2 border-panetto-orange px-6 py-3 rounded-xl font-bold text-sm md:text-base hover:bg-orange-50 transition shadow-sm active:scale-95">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -131,10 +147,12 @@ class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 
                                 </svg>
                                 Descargar QR Sorteo
                             </a>
+                            @endrole
                         </div>
                     </div>
                 @endif
 
+                @role('gerente')
                 @if ($view === 'survey')
                     <div class="flex flex-col h-full">
                         <div class="mb-6 flex justify-between items-center">
@@ -283,7 +301,9 @@ class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 
                         </div>
                     </div>
                 @endif
+                @endrole
 
+                @role('gerente')
                 @if ($view === 'raffle')
                     <div class="flex flex-col h-full">
                         <div class="mb-6 flex justify-between items-center">
@@ -385,6 +405,7 @@ class="min-h-screen bg-panetto-light flex flex-col items-center pt-6 px-4 pb-10 
                         </div>
                     </div>
                 @endif
+                @endrole
 
                 @if ($view === 'salon_controls')
                     <div class="flex flex-col h-full">
