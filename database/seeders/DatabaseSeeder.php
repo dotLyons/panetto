@@ -177,6 +177,7 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('Sucursales, categorías y productos creados exitosamente!');
 
+        $this->call(RoleSeeder::class);
         $this->createRaffleEntries();
         $this->createSurveyEntries();
     }
@@ -273,7 +274,7 @@ class DatabaseSeeder extends Seeder
         foreach ($users as $userData) {
             $location = \App\Models\Location::where('slug', $userData['location'])->first();
             
-            \App\Models\User::firstOrCreate(
+            $user = \App\Models\User::firstOrCreate(
                 ['email' => $userData['email']],
                 [
                     'name' => $userData['name'],
@@ -282,6 +283,11 @@ class DatabaseSeeder extends Seeder
                     'location_id' => $location?->id,
                 ]
             );
+
+            // Asignar rol 'encargado' a cada usuario de sucursal
+            if (!$user->hasRole('encargado')) {
+                $user->assignRole('encargado');
+            }
         }
 
         $this->command->info('Usuarios creados: libertad@panetto.com, plaza@panetto.com, club@panetto.com, coventry@panetto.com (password: password)');
